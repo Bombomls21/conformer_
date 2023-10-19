@@ -124,11 +124,8 @@ def train_conformer(epoch, data_loader, model, criterion, optimizer, opt,
             'optimizer': optimizer.state_dict(),
         }
         torch.save(states, save_file_path)
-        
-        wandb.log({'epoch': epoch, 
-                    'Total Loss (Training)': total_loss.avg, 
-                    'CNN loss': losses_cnn.avg, 
-                    'Trans loss': losses_trans.avg})
+    
+    return total_loss.avg, losses_cnn.avg, losses_trans.avg
         
         
 def evaluate_conformer(epoch, data_loader, model, opt):
@@ -173,13 +170,10 @@ def evaluate_conformer(epoch, data_loader, model, opt):
     ####################################################
     attr = np.where(results_ensemble > 2, 1, 0)
     result = get_pedestrian_metrics(attr, gt_results)
-    wandb.log({'mA': result.ma,
-            'instance_acc': result.instance_acc,
-            'instance_prec': result.instance_prec,
-            'instance_recall': result.instance_recall})
     
     print(f'mA: {result.ma} | Instance_acc: {result.instance_acc} | Instance_prec: {result.instance_prec} | instance_recall: {result.instance_recall}')
     print('--------------------------------------')
+    return result.ma, result.instance_acc, result.instance_prec, result.instance_recall
     
 # def evaluate_conformer(epoch, data_loader, model, opt):
 #     print('test')

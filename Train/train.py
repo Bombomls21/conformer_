@@ -230,11 +230,19 @@ if __name__ == '__main__':
             })
         for i in range(opts.begin_epoch, opts.n_epochs + 1):
             if not opts.no_train:
-                train_conformer(i, train_loader, model, criterion, optimizer,
+                total_loss, losses_cnn, losses_trans = train_conformer(i, train_loader, model, criterion, optimizer,
                                            opts, train_logger, train_batch_logger)
                 
             if opts.test:
-                evaluate_conformer(i, valid_loader, model, opts)        
+                ma, instance_acc, instance_prec, instance_recall = evaluate_conformer(i, valid_loader, model, opts)  
+       
+            wandb.log({'Total Loss (Training)': total_loss, 
+                    'CNN loss (Training)': losses_cnn, 
+                    'Trans loss (Training)': losses_trans,
+                    'mA (Val)': ma, 
+                    'instance_acc (Val)': instance_acc,
+                    'instance_prec (Val)': instance_prec,
+                    'instance_recall (Val)': instance_recall})
         wandb.finish()
 
 
